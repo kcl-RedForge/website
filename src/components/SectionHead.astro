@@ -1,0 +1,12 @@
+---
+interface Props { index: string; kicker: string; title: string; id?: string }
+const { index, kicker, title, id } = Astro.props;
+---
+<header class="section-head">
+  <p class="label"><span class="hot">// {index}</span> · {kicker}</p>
+  <h2 class="title" id={id}>{title}</h2>
+</header>
+<style>
+  .section-head { margin-bottom: var(--space-5); }
+  .section-head .label { margin: 0 0 var(--space-3); }
+</style>

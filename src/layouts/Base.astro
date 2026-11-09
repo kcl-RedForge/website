@@ -1,0 +1,92 @@
+---
+import '../styles/global.css';
+import Lockup from '../components/Lockup.astro';
+import site from '../data/site.json';
+import { url } from '../lib/url';
+
+interface Props { title?: string; description?: string }
+const {
+  title = "KCL RedForge · King's College London student engineering team",
+  description = "KCL RedForge is King's College London's elite student engineering team, building a Mars rover, a lunar robot and a rocket for the European Rover Challenge, UK Lunabotics and MachX.",
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(url('og.png'), Astro.site);
+const home = url('');
+---
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta name="theme-color" content="#050505" />
+  <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+  <link rel="icon" href={url('favicon-32.png')} sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href={url('apple-touch-icon.png')} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="KCL RedForge" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <a class="btn btn-red skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap bar">
+      <a href={home} class="home" aria-label="KCL RedForge home"><Lockup /></a>
+      <nav aria-label="Main">
+        <a href={`${home}#projects`} class="label nav-link">Projects</a>
+        <a href={`${home}#team`} class="label nav-link">Team</a>
+        <a href={`${home}#sponsors`} class="label nav-link">Sponsors</a>
+        <a href={`${home}#apply`} class="btn btn-red nav-apply">Apply</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main"><slot /></main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot-top">
+        <a href={home} aria-label="KCL RedForge home"><Lockup /></a>
+        <ul class="foot-links">
+          <li><a class="label link-plain" href={site.applyUrl}>Apply</a></li>
+          <li><a class="label link-plain" href={site.instagram}>Instagram {site.instagramHandle}</a></li>
+          {site.contactEmail && <li><a class="label link-plain" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>}
+        </ul>
+      </div>
+      <div class="foot-bottom label">
+        <span>Created and sponsored by <a class="link-plain ink" href={site.kclElectronics}>KCL Electronics</a></span>
+        <span>Strand, London · {site.coordinates}</span>
+        <span>© {new Date().getFullYear()} KCL RedForge</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(5,5,5,.88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--seam); }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .home { text-decoration: none; display: flex; }
+  nav { display: flex; align-items: center; gap: clamp(16px, 3vw, 36px); }
+  .nav-link { text-decoration: none; color: var(--ink-muted); padding: 12px 0; }
+  .nav-link:hover { color: var(--ink); }
+  .nav-apply { padding: 12px 18px; min-height: 40px; font-size: 12px; }
+  @media (max-width: 640px) {
+    .nav-link { display: none; }
+    .bar :global(.lockup) { font-size: 14px; }
+  }
+  .site-footer { border-top: 1px solid var(--seam); padding: var(--space-5) 0 var(--space-4); }
+  .foot-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-4); padding-bottom: var(--space-5); }
+  .foot-top > a { text-decoration: none; }
+  .foot-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .ink { color: var(--ink); }
+  .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); border-top: 1px solid var(--seam); padding-top: var(--space-4); color: var(--ink-muted); }
+</style>

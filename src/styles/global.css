@@ -1,0 +1,90 @@
+/* KCL RedForge design tokens: values from the RedForge design system (Void theme). */
+:root {
+  --void: #050505;
+  --void-raised: #0f0e0e;
+  --seam: #262323;
+  --grid: #141212;
+  --ink: #f2f0f0;
+  --ink-soft: #cfcaca;
+  --ink-muted: #8a8384;
+  --ink-faint: #5f595a;
+  --kings-red: #e2231a;
+  --red-hot: #ff3b2f;
+  --red-ember: #6e0f0b;
+  --on-red: #ffffff;
+  --glow-red: 0 0 48px rgba(226, 35, 26, 0.45);
+
+  --display: "Archivo", "Arial Black", system-ui, sans-serif;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 16px; --space-4: 24px; --space-5: 48px; --space-6: 120px;
+  --cut: 12px;
+  --gutter: clamp(16px, 5vw, 72px);
+  --max: 1240px;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--void); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+::selection { background: var(--kings-red); color: var(--on-red); }
+:focus-visible { outline: 1px solid var(--red-hot); outline-offset: 3px; }
+
+/* Type styles */
+.wordmark { font-family: var(--display); font-stretch: 125%; font-weight: 800; letter-spacing: 0.42em; margin-right: -0.42em; text-transform: uppercase; }
+.display { font-family: var(--display); font-stretch: 125%; font-weight: 900; letter-spacing: -0.03em; line-height: 0.88; text-transform: uppercase; margin: 0; }
+.title { font-family: var(--display); font-stretch: 125%; font-weight: 800; letter-spacing: -0.01em; line-height: 1; text-transform: uppercase; margin: 0; font-size: clamp(30px, 5vw, 56px); }
+.heading { font-family: var(--sans); font-weight: 600; font-size: 20px; line-height: 1.25; margin: 0; }
+.label { font-family: var(--mono); font-weight: 500; font-size: 12px; line-height: 1.2; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-muted); }
+.data { font-family: var(--mono); font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.hot { color: var(--red-hot); }
+.muted { color: var(--ink-muted); }
+
+/* Layout */
+.wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+.section { position: relative; padding: clamp(72px, 12vw, 160px) 0; border-top: 1px solid var(--seam); }
+.grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px; background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse at center, #000 40%, transparent 85%);
+}
+.prose p { margin: 0 0 1em; max-width: 62ch; color: var(--ink-soft); }
+.prose p:last-child { margin-bottom: 0; }
+
+/* Crosshair: + made from 1px lines, 12px across */
+.crosshair { position: absolute; width: 12px; height: 12px; pointer-events: none; }
+.crosshair::before, .crosshair::after { content: ""; position: absolute; background: var(--ink-faint); }
+.crosshair::before { left: 5.5px; top: 0; width: 1px; height: 12px; }
+.crosshair::after { top: 5.5px; left: 0; height: 1px; width: 12px; }
+
+/* Buttons: square, 45-degree cut off the top-right */
+.btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+  text-decoration: none; padding: 16px 24px; min-height: 48px; line-height: 1;
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+  transition: background-color .15s ease, color .15s ease;
+}
+.btn-red { background: var(--kings-red); color: var(--on-red); }
+.btn-red:hover { background: var(--red-hot); }
+.btn-ghost { color: var(--ink); background: var(--void-raised); box-shadow: inset 0 0 0 1px var(--seam); }
+.btn-ghost:hover { background: var(--seam); }
+.btn .arrow { font-family: var(--sans); font-size: 16px; }
+
+.link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink-faint); padding-bottom: 2px; }
+.link:hover { border-color: var(--red-hot); }
+.link-plain { text-decoration: none; color: inherit; }
+.link-plain:hover { color: var(--ink); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 100; }
+.skip:focus { top: 16px; }

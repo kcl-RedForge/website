@@ -1,0 +1,273 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import Crosshair from '../components/Crosshair.astro';
+import SectionHead from '../components/SectionHead.astro';
+import site from '../data/site.json';
+import { url } from '../lib/url';
+
+const byOrder = (a: any, b: any) => a.data.order - b.data.order;
+const projects = (await getCollection('projects')).sort(byOrder);
+const team = (await getCollection('team')).sort(byOrder);
+const sponsors = (await getCollection('sponsors')).sort(byOrder);
+
+const projectsRendered = await Promise.all(projects.map(async (p) => ({ ...p, Content: (await render(p)).Content })));
+const section = async (id: string) => {
+  const e = await getEntry('sections', id);
+  if (!e) throw new Error(`Missing src/content/sections/${id}.md`);
+  return { title: e.data.title, Content: (await render(e)).Content };
+};
+const about = await section('about');
+const apply = await section('apply');
+const sponsorText = await section('sponsors');
+
+const initials = (n: string) => n.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+const fig = (i: number) => String(i + 1).padStart(2, '0');
+---
+<Base>
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="grid-bg"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <span class="label ro ro-tl">RF-GEN-WEB · REV.1</span>
+    <span class="label ro ro-tr">{site.coordinates}</span>
+    <Crosshair style="left:20px;top:20px" /><Crosshair style="right:20px;top:20px" />
+    <Crosshair style="left:20px;bottom:20px" /><Crosshair style="right:20px;bottom:20px" />
+
+    <div class="wrap hero-inner">
+      <Mark class="hero-mark" />
+      <p class="label hero-kicker">King's College London</p>
+      <h1 id="hero-title" class="wordmark hero-wordmark"><span class="sr-only">KCL </span>RedForge</h1>
+      <p class="label hero-comps">// ERC · Lunabotics · MachX</p>
+      <p class="hero-body">King's College London's elite student engineering team. A Mars rover, a lunar robot and a rocket, built by students.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-red" href={site.applyUrl}>{site.applicationsOpen ? 'Apply now' : 'Applications closed'} <span class="arrow">→</span></a>
+        <a class="btn btn-ghost" href="#projects">See the projects</a>
+      </div>
+    </div>
+    <div class="wrap"><div class="hero-status label">
+      <span>// Status <span class="hot">online</span></span>
+      <span class={site.applicationsOpen ? 'hot' : ''}>Recruitment {site.season} · {site.applicationsOpen ? 'Applications open' : 'Closed'}</span>
+    </div></div>
+  </section>
+
+  <!-- 01 ABOUT -->
+  <section class="section" aria-labelledby="about-title">
+    <div class="wrap about">
+      <div>
+        <SectionHead index="01" kicker="About" title={about.title} id="about-title" />
+        <div class="prose"><about.Content /></div>
+      </div>
+      <dl class="stats">
+        <div><dt class="label">Competitions</dt><dd class="stat">03</dd></div>
+        <div><dt class="label">Rover mass</dt><dd class="stat">75<small>kg</small></dd></div>
+        <div><dt class="label">Rocket target altitude</dt><dd class="stat">2<small>km</small></dd></div>
+        <div><dt class="label">KCL Electronics makers</dt><dd class="stat">~130</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 02 PROJECTS -->
+  <section class="section" id="projects" aria-labelledby="projects-title">
+    <div class="wrap">
+      <SectionHead index="02" kicker="Projects" title="Three competitions" id="projects-title" />
+      <div class="projects">
+        {projectsRendered.map((p, i) => (
+          <article class="project" id={p.data.code.toLowerCase()}>
+            <p class:list={['label', 'code', { hot: i === 0 }]}>{p.data.code}</p>
+            <div class="project-main">
+              <h3 class="title project-name">{p.data.name}</h3>
+              <p class="project-summary">{p.data.summary}</p>
+              <div class="prose project-body"><p.Content /></div>
+              <dl class="meta">
+                <div><dt class="label">Organiser</dt><dd class="data">{p.data.organiser}</dd></div>
+                <div><dt class="label">Arena</dt><dd class="data">{p.data.location}</dd></div>
+              </dl>
+              <ul class="chips" aria-label="Disciplines">
+                {p.data.disciplines.map((d) => <li class="label chip">{d}</li>)}
+              </ul>
+              <a class="link label" href={p.data.website} rel="noopener">Competition site →</a>
+            </div>
+            <div class="project-side">
+              {p.data.image ? (
+                <figure class="figure">
+                  <img src={url(p.data.image)} alt={p.data.imageCaption ?? p.data.name} loading="lazy" width="930" height="621" />
+                  <figcaption class="label">Fig. {fig(i)} · {p.data.imageCaption}</figcaption>
+                </figure>
+              ) : null}
+              <dl class="readouts">
+                {p.data.stats.map((s) => (
+                  <div><dt class="label">{s.label}</dt><dd class="readout">{s.value}</dd></div>
+                ))}
+              </dl>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 TEAM -->
+  <section class="section" id="team" aria-labelledby="team-title">
+    <div class="wrap">
+      <SectionHead index="03" kicker="Team" title="The team" id="team-title" />
+      {team.length > 0 ? (
+        <ul class="team">
+          {team.map((m) => (
+            <li class="member">
+              {m.data.photo
+                ? <img class="avatar" src={url(m.data.photo)} alt="" loading="lazy" width="320" height="320" />
+                : <span class="avatar avatar-empty label" aria-hidden="true">{initials(m.data.name)}</span>}
+              <p class="label member-code">{m.data.project}</p>
+              <h3 class="heading">{m.data.linkedin ? <a class="link-plain" href={m.data.linkedin}>{m.data.name}</a> : m.data.name}</h3>
+              <p class="member-role">{m.data.role}</p>
+              {m.data.course && <p class="label member-course">{m.data.course}</p>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="panel">
+          <p class="label">// Roster {site.season} · <span class="hot">Recruiting</span></p>
+          <p class="heading">The {site.season} team is announced once applications close.</p>
+          <a class="link label" href="#apply">Join it →</a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- 04 APPLY -->
+  <section class="section apply" id="apply" aria-labelledby="apply-title">
+    <div class="grid-bg"></div>
+    <div class="apply-glow" aria-hidden="true"></div>
+    <div class="wrap apply-inner">
+      <p class="label hot">// 04 · Recruitment {site.season}</p>
+      <h2 class="display apply-display" id="apply-title">
+        {site.applicationsOpen ? <>Apply<br /><span class="red">now</span></> : <>Applications<br /><span class="red">closed</span></>}
+      </h2>
+      <div class="prose apply-body"><apply.Content /></div>
+      <dl class="apply-grid">
+        <div><dt class="label">// Who</dt><dd class="title small">First year to PhD</dd></div>
+        <div><dt class="label">// Status</dt><dd class="title small">{site.applicationsOpen ? 'Open' : 'Closed'}</dd></div>
+      </dl>
+      {site.applicationsOpen
+        ? <a class="btn btn-red btn-lg" href={site.applyUrl}>Apply to RedForge <span class="arrow">→</span></a>
+        : <a class="btn btn-ghost btn-lg" href={site.instagram}>Follow {site.instagramHandle} for the next round</a>}
+    </div>
+  </section>
+
+  <!-- 05 SPONSORS -->
+  <section class="section" id="sponsors" aria-labelledby="sponsors-title">
+    <div class="wrap sponsors">
+      <div>
+        <SectionHead index="05" kicker="Sponsors" title={sponsorText.title} id="sponsors-title" />
+        <div class="prose"><sponsorText.Content /></div>
+        <div class="sponsor-cta">
+          {site.contactEmail
+            ? <a class="btn btn-ghost" href={`mailto:${site.contactEmail}?subject=Sponsoring%20KCL%20RedForge`}>Sponsor RedForge <span class="arrow">→</span></a>
+            : <a class="btn btn-ghost" href={site.instagram}>Message us on Instagram <span class="arrow">→</span></a>}
+        </div>
+      </div>
+      <ul class="sponsor-list">
+        {sponsors.map((s) => (
+          <li class="sponsor">
+            <p class="label">{s.data.tier}</p>
+            {s.data.website
+              ? <a class="sponsor-name" href={s.data.website}>{s.data.logo ? <img src={url(s.data.logo)} alt={s.data.name} /> : s.data.name}</a>
+              : <span class="sponsor-name">{s.data.logo ? <img src={url(s.data.logo)} alt={s.data.name} /> : s.data.name}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Hero */
+  .hero { position: relative; min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 96px 0 0; }
+  .hero-glow { position: absolute; left: 50%; top: 38%; width: min(1100px, 140vw); height: 640px; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(226,35,26,.28), rgba(226,35,26,0)); pointer-events: none; }
+  .ro { position: absolute; top: 28px; color: var(--ink-faint); }
+  .ro-tl { left: 44px; } .ro-tr { right: 44px; }
+  .hero-inner { position: relative; text-align: center; display: flex; flex-direction: column; align-items: center; flex: 1; justify-content: center; padding-bottom: 48px; }
+  .hero-inner :global(.hero-mark) { width: min(440px, 64vw); height: auto; margin-bottom: clamp(32px, 6vw, 64px); }
+  .hero-kicker { margin: 0 0 18px; font-size: clamp(12px, 1.6vw, 16px); }
+  .hero-wordmark { margin: 0; font-size: clamp(28px, 7vw, 76px); line-height: 0.9; }
+  .hero-comps { margin: 24px 0 0; font-size: clamp(11px, 1.4vw, 14px); }
+  .hero-body { margin: 32px 0 0; max-width: 46ch; color: var(--ink-soft); font-size: clamp(16px, 1.8vw, 19px); }
+  .hero-ctas { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .hero-status { position: relative; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; border-top: 1px solid var(--seam); padding-top: 20px; padding-bottom: 20px; }
+  @media (max-width: 640px) { .ro, .hero > :global(.crosshair) { display: none; } .hero { padding-top: 56px; } }
+
+  /* About */
+  .about { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-5) clamp(48px, 8vw, 120px); align-items: end; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; margin: 0; border-top: 1px solid var(--seam); border-left: 1px solid var(--seam); }
+  .stats > div { padding: 20px; border-right: 1px solid var(--seam); border-bottom: 1px solid var(--seam); }
+  .stats dd { margin: 12px 0 0; }
+  .stat { font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: clamp(34px, 4.5vw, 52px); line-height: 1; letter-spacing: -0.01em; }
+  .stat small { font-family: var(--mono); font-size: 14px; font-weight: 500; letter-spacing: .14em; color: var(--ink-muted); margin-left: 6px; text-transform: uppercase; }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
+
+  /* Projects */
+  .project { display: grid; grid-template-columns: 96px minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--space-4) clamp(24px, 4vw, 56px); padding: clamp(32px, 5vw, 56px) 0; border-top: 1px solid var(--seam); }
+  .project:last-child { border-bottom: 1px solid var(--seam); }
+  .code { font-size: 20px; margin: 4px 0 0; }
+  .project-name { font-size: clamp(26px, 3.4vw, 38px); }
+  .project-summary { margin: 14px 0 20px; font-size: 19px; line-height: 1.4; font-weight: 600; color: var(--ink); max-width: 40ch; }
+  .project-body :global(p) { color: var(--ink-muted); }
+  .meta { display: flex; flex-wrap: wrap; gap: 12px 40px; margin: 24px 0 0; }
+  .meta dd { margin: 6px 0 0; }
+  .chips { list-style: none; padding: 0; margin: 24px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 8px 10px; box-shadow: inset 0 0 0 1px var(--seam); color: var(--ink-soft); font-size: 11px; }
+  .figure { margin: 0 0 var(--space-4); }
+  .figure img { width: 100%; height: auto; box-shadow: 0 0 0 1px var(--seam); }
+  .figure figcaption { margin-top: 10px; }
+  .readouts { display: grid; grid-template-columns: 1fr 1fr; margin: 0; border-top: 1px solid var(--seam); }
+  .readouts > div { padding: 16px 0; }
+  .readouts > div + div { padding-left: 20px; border-left: 1px solid var(--seam); }
+  .readouts dd { margin: 10px 0 0; }
+  .readout { font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: 26px; line-height: 1; text-transform: uppercase; }
+  @media (max-width: 960px) {
+    .project { grid-template-columns: 64px minmax(0, 1fr); }
+    .project-side { grid-column: 2; }
+  }
+  @media (max-width: 560px) {
+    .project { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .project-side { grid-column: 1; margin-top: 12px; }
+    .code { font-size: 14px; }
+  }
+
+  /* Team */
+  .team { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-5) var(--space-4); }
+  .avatar { width: 100%; aspect-ratio: 1; object-fit: cover; filter: grayscale(1) contrast(1.1); background: var(--void-raised); box-shadow: 0 0 0 1px var(--seam); margin-bottom: 16px; }
+  .avatar-empty { display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--ink-faint); }
+  .member-code { margin: 0 0 8px; }
+  .member-role { margin: 6px 0 0; color: var(--ink-soft); }
+  .member-course { margin: 8px 0 0; }
+  .panel { background: var(--void-raised); box-shadow: inset 0 0 0 1px var(--seam); padding: clamp(24px, 4vw, 48px); max-width: 720px; clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%); }
+  .panel .heading { margin: 16px 0 24px; }
+
+  /* Apply */
+  .apply { overflow: hidden; }
+  .apply-glow { position: absolute; left: -15%; top: 10%; width: 80%; height: 70%; background: radial-gradient(closest-side, rgba(226,35,26,.26), rgba(226,35,26,0)); pointer-events: none; }
+  .apply-inner { position: relative; }
+  .apply-display { font-size: clamp(72px, 17vw, 236px); margin: 20px 0 0 -0.04em; white-space: nowrap; }
+  .apply-display .red { color: var(--kings-red); }
+  .apply-body { margin-top: 40px; font-size: clamp(17px, 2vw, 21px); }
+  .apply-body :global(p) { color: var(--ink); }
+  .apply-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); column-gap: 24px; margin: 48px 0; border-top: 1px solid var(--seam); }
+  .apply-grid > div { padding: 24px 0; }
+  .apply-grid dd { margin: 12px 0 0; }
+  .title.small { font-size: clamp(22px, 3vw, 34px); }
+  .btn-lg { font-size: 14px; padding: 20px 28px; }
+
+  /* Sponsors */
+  .sponsors { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-5) clamp(48px, 8vw, 120px); align-items: start; }
+  .sponsor-cta { margin-top: 32px; }
+  .sponsor-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--seam); }
+  .sponsor { padding: 24px 0; border-bottom: 1px solid var(--seam); }
+  .sponsor .label { margin: 0 0 12px; }
+  .sponsor-name { font-family: var(--display); font-stretch: 125%; font-weight: 800; font-size: clamp(22px, 2.6vw, 30px); text-transform: uppercase; text-decoration: none; color: var(--ink); }
+  a.sponsor-name:hover { color: var(--red-hot); }
+  .sponsor-name img { max-height: 48px; width: auto; }
+  @media (max-width: 860px) { .sponsors { grid-template-columns: 1fr; } }
+</style>

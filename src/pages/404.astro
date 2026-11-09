@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+<Base title="Not found · KCL RedForge">
+  <section class="nf wrap">
+    <p class="label">// Error 404 · <span class="hot">Signal lost</span></p>
+    <h1 class="display">Not<br />found</h1>
+    <p><a class="btn btn-ghost" href={url('')}>Back to base <span class="arrow">→</span></a></p>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 70svh; display: flex; flex-direction: column; justify-content: center; gap: 24px; padding-top: 64px; padding-bottom: 64px; }
+  .nf .display { font-size: clamp(64px, 14vw, 180px); }
+</style>
