@@ -149,6 +149,7 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
       <dl class="apply-grid">
         <div><dt class="label">// Who</dt><dd class="title small">First year to PhD</dd></div>
         <div><dt class="label">// Status</dt><dd class="title small">{site.applicationsOpen ? 'Always open' : 'Closed'}</dd></div>
+        {site.applicationsOpen && site.coreTeamDate && <div><dt class="label">// Core team</dt><dd class="title small">{site.coreTeamDate}</dd></div>}
         {site.applicationsOpen && <div><dt class="label">// Review</dt><dd class="title small">{site.reviewCycle}</dd></div>}
       </dl>
       {site.applicationsOpen
@@ -256,7 +257,7 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
   .apply-display .red { color: var(--kings-red); }
   .apply-body { margin-top: 40px; font-size: clamp(17px, 2vw, 21px); }
   .apply-body :global(p) { color: var(--ink); }
-  .apply-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 300px)); column-gap: 24px; margin: 48px 0; border-top: 1px solid var(--seam); }
+  .apply-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 260px)); column-gap: 24px; margin: 48px 0; border-top: 1px solid var(--seam); }
   .apply-grid > div { padding: 24px 0; }
   .apply-grid dd { margin: 12px 0 0; }
   .title.small { font-size: clamp(20px, 3vw, 34px); }

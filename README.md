@@ -20,7 +20,7 @@ Everything you'd normally want to change is a small text file. Open it on GitHub
 Notes:
 - Files starting with `_` never show on the site; they're templates.
 - The team section shows a "core team forming" panel until the first member file exists.
-- Applications are rolling (always open, reviewed weekly: `"reviewCycle"` in `site.json`). If they ever need to close, set `"applicationsOpen": false` and the buttons switch to a "follow us on Instagram" message.
+- Applications are rolling (always open, reviewed weekly: `"reviewCycle"` in `site.json`). Once the core team date has passed, clear `"coreTeamDate"` (set it to `""`) and remove the date line from `src/content/sections/apply.md`. If they ever need to close, set `"applicationsOpen": false` and the buttons switch to a "follow us on Instagram" message.
 - If a change breaks the build, the live site stays on the last good version. Check the **Actions** tab to see what went wrong.
 
 ## Style
