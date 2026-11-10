@@ -8,7 +8,7 @@ Everything you'd normally want to change is a small text file. Open it on GitHub
 
 | To change… | Edit this |
 | --- | --- |
-| Apply link, open/closed status, season, contact email, Instagram | `src/data/site.json` |
+| Apply link, open/closed status, review cycle, season, contact email, Instagram | `src/data/site.json` |
 | About text | `src/content/sections/about.md` |
 | Apply section text | `src/content/sections/apply.md` |
 | Sponsors text | `src/content/sections/sponsors.md` |
@@ -19,8 +19,8 @@ Everything you'd normally want to change is a small text file. Open it on GitHub
 
 Notes:
 - Files starting with `_` never show on the site; they're templates.
-- The team section shows a "recruiting" panel until the first member file exists.
-- When applications close, set `"applicationsOpen": false` in `site.json`. The buttons switch to a "follow us on Instagram" message.
+- The team section shows a "core team forming" panel until the first member file exists.
+- Applications are rolling (always open, reviewed weekly: `"reviewCycle"` in `site.json`). If they ever need to close, set `"applicationsOpen": false` and the buttons switch to a "follow us on Instagram" message.
 - If a change breaks the build, the live site stays on the last good version. Check the **Actions** tab to see what went wrong.
 
 ## Style

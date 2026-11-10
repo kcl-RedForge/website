@@ -48,7 +48,7 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
     </div>
     <div class="wrap"><div class="hero-status label">
       <span>// Status <span class="hot">online</span></span>
-      <span class={site.applicationsOpen ? 'hot' : ''}>Recruitment {site.season} · {site.applicationsOpen ? 'Applications open' : 'Closed'}</span>
+      <span class={site.applicationsOpen ? 'hot' : ''}>Recruitment {site.season} · {site.applicationsOpen ? 'Rolling applications' : 'Closed'}</span>
     </div></div>
   </section>
 
@@ -129,7 +129,7 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
       ) : (
         <div class="panel">
           <p class="label">// Roster {site.season} · <span class="hot">Recruiting</span></p>
-          <p class="heading">The {site.season} team is announced once applications close.</p>
+          <p class="heading">The core team is forming now. Members appear here as they join.</p>
           <a class="link label" href="#apply">Join it →</a>
         </div>
       )}
@@ -148,7 +148,8 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
       <div class="prose apply-body"><apply.Content /></div>
       <dl class="apply-grid">
         <div><dt class="label">// Who</dt><dd class="title small">First year to PhD</dd></div>
-        <div><dt class="label">// Status</dt><dd class="title small">{site.applicationsOpen ? 'Open' : 'Closed'}</dd></div>
+        <div><dt class="label">// Status</dt><dd class="title small">{site.applicationsOpen ? 'Always open' : 'Closed'}</dd></div>
+        {site.applicationsOpen && <div><dt class="label">// Review</dt><dd class="title small">{site.reviewCycle}</dd></div>}
       </dl>
       {site.applicationsOpen
         ? <a class="btn btn-red btn-lg" href={site.applyUrl}>Apply to RedForge <span class="arrow">→</span></a>
@@ -163,9 +164,10 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
         <SectionHead index="05" kicker="Sponsors" title={sponsorText.title} id="sponsors-title" />
         <div class="prose"><sponsorText.Content /></div>
         <div class="sponsor-cta">
-          {site.contactEmail
-            ? <a class="btn btn-ghost" href={`mailto:${site.contactEmail}?subject=Sponsoring%20KCL%20RedForge`}>Sponsor RedForge <span class="arrow">→</span></a>
-            : <a class="btn btn-ghost" href={site.instagram}>Message us on Instagram <span class="arrow">→</span></a>}
+          <a class="btn btn-ghost" href={site.instagram}>Message us on Instagram <span class="arrow">→</span></a>
+          {site.contactEmail && (
+            <p class="contact"><span class="label">Or email</span> <a class="link data" href={`mailto:${site.contactEmail}?subject=Sponsoring%20KCL%20RedForge`}>{site.contactEmail}</a></p>
+          )}
         </div>
       </div>
       <ul class="sponsor-list">
@@ -254,15 +256,17 @@ const fig = (i: number) => String(i + 1).padStart(2, '0');
   .apply-display .red { color: var(--kings-red); }
   .apply-body { margin-top: 40px; font-size: clamp(17px, 2vw, 21px); }
   .apply-body :global(p) { color: var(--ink); }
-  .apply-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); column-gap: 24px; margin: 48px 0; border-top: 1px solid var(--seam); }
+  .apply-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 300px)); column-gap: 24px; margin: 48px 0; border-top: 1px solid var(--seam); }
   .apply-grid > div { padding: 24px 0; }
   .apply-grid dd { margin: 12px 0 0; }
-  .title.small { font-size: clamp(22px, 3vw, 34px); }
+  .title.small { font-size: clamp(20px, 3vw, 34px); }
+  @media (max-width: 560px) { .apply-grid { grid-template-columns: 1fr 1fr; } }
   .btn-lg { font-size: 14px; padding: 20px 28px; }
 
   /* Sponsors */
   .sponsors { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-5) clamp(48px, 8vw, 120px); align-items: start; }
-  .sponsor-cta { margin-top: 32px; }
+  .sponsor-cta { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+  .contact { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
   .sponsor-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--seam); }
   .sponsor { padding: 24px 0; border-bottom: 1px solid var(--seam); }
   .sponsor .label { margin: 0 0 12px; }
